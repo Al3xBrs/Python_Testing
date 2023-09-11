@@ -1,4 +1,3 @@
-import json
 from ..server import loadClubs, loadCompetitions
 
 
