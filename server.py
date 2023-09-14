@@ -14,6 +14,16 @@ def loadCompetitions():
         return listOfCompetitions
 
 
+def update_clubs():
+    global clubs
+    clubs = loadClubs()
+
+
+def update_competitions():
+    global competitions
+    competitions = loadCompetitions()
+
+
 app = Flask(__name__)
 app.secret_key = "something_special"
 
@@ -28,6 +38,7 @@ def index():
 
 @app.route("/showSummary", methods=["POST"])
 def showSummary():
+    print(clubs)
     club = [club for club in clubs if club["email"] == request.form["email"]][0]
     return render_template("welcome.html", club=club, competitions=competitions)
 
@@ -69,4 +80,6 @@ def logout():
 
 
 if __name__ == "__main__":
+    update_competitions()
+    update_clubs()
     app.run(debug=True)
