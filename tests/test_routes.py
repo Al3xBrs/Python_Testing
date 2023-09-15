@@ -3,7 +3,7 @@ from ..server import (
     app,
 )
 
-from .test_models import TestClub, TestCompetition
+from .models import TestClub, TestCompetition
 
 from flask_testing import TestCase
 

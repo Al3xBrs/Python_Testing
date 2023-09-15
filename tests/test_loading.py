@@ -1,5 +1,5 @@
 from ..server import loadClubs, loadCompetitions
-from .test_models import TestClub, TestCompetition
+from .models import TestClub, TestCompetition
 
 
 def test_should_load_club_correctly():
