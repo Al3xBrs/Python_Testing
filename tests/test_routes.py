@@ -1,20 +1,11 @@
 from ..server import (
-    index,
-    showSummary,
-    book,
-    purchasePlaces,
-    points_display,
-    logout,
-    loadClubs,
-    loadCompetitions,
+    update_competitions,
     app,
 )
 
-from .test_loading import TestClub
-from flask import Flask
-from flask_testing import TestCase
+from .test_models import TestClub, TestCompetition
 
-import asyncio
+from flask_testing import TestCase
 
 
 class TestRoutes(TestCase):
@@ -22,7 +13,7 @@ class TestRoutes(TestCase):
         app.config["TESTING"] = True
         return app
 
-    def test_should_return_code_ok(self):
+    def test_should_return_code_ok_index_points_display(self):
         responses = [
             self.client.get("/"),
             self.client.get("/points_display"),
@@ -30,27 +21,55 @@ class TestRoutes(TestCase):
         for response in responses:
             self.assert200(response)
 
-    def test_should_connect_correct_club(self):
+    def test_should_connect_correct_club_showSummary(self):
         TestClub.create_club()
-        response = self.client.post("/showSummary", data={"email": "test@test.fr"})
-        self.assert200(response)
-        self.assertIn("test@test.fr", response.get_data(as_text=True))
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(asyncio.gather())
-        TestClub.delete_club()
 
-    def test_should_return_correct_competitions(self):
+        try:
+            response = self.client.post("/showSummary", data={"email": "test@test.fr"})
+            self.assert200(response)
+            self.assertIn("test@test.fr", response.get_data(as_text=True))
+
+        finally:
+            TestClub.delete_club()
+
+    def test_should_return_correct_competitions_showSummary(self):
         TestClub.create_club()
+        TestCompetition.create_comp()
+
         response = self.client.post(
             "/showSummary",
             data={
                 "email": "test@test.fr",
             },
         )
-        self.assert200(response)
-        competitions = loadCompetitions()
-        for comp in competitions:
-            self.assertIn(f"{comp['name']}", response.get_data(as_text=True))
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(asyncio.gather())
-        TestClub.delete_club()
+
+        try:
+            self.assert200(response)
+            competitions = update_competitions()
+            text_response = response.get_data(as_text=True)
+            for comp in competitions:
+                self.assertIn(f"{comp['name']}", text_response)
+                self.assertIn(f"{comp['date']}", text_response)
+                self.assertIn(f"{comp['numberOfPlaces']}", text_response)
+
+        finally:
+            TestClub.delete_club()
+            TestCompetition.delete_competition()
+
+    def test_should_return_correct_name_places_competitions_book(self):
+        TestClub.create_club()
+        TestCompetition.create_comp()
+
+        response = self.client.get(
+            "/book/TEST/TEST",
+        )
+
+        try:
+            self.assert200(response)
+            text_response = response.get_data(as_text=True)
+            self.assertIn("TEST", text_response)
+            self.assertIn("Places available: 10", text_response)
+
+        finally:
+            TestClub.delete_club()
+            TestCompetition.delete_competition()
