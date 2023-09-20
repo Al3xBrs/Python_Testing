@@ -40,3 +40,58 @@ class TestPoints(TestCase):
         finally:
             TestClub.delete_club()
             TestCompetition.delete_competition()
+
+    def test_should_save_places(self):
+        TestClub.create_club()
+        TestCompetition.create_comp()
+
+        test_club = [c for c in update_clubs() if c["name"] == "TEST"][0]
+        test_comp = [comp for comp in update_competitions() if comp["name"] == "TEST"][
+            0
+        ]
+
+        try:
+            with self.app.test_request_context("/purchasePlaces", method="POST"):
+                form_data = request.form.to_dict()
+
+                form_data["competition"] = test_comp["name"]
+                form_data["club"] = test_club["name"]
+                form_data["places"] = "2"
+
+                request.form = form_data
+                response = purchasePlaces()
+
+            self.assertIn(f"{test_comp['name']}", response)
+            self.assertIn(f"{test_comp['date']}", response)
+            self.assertIn(f"{test_comp['numberOfPlaces']}", response)
+
+        finally:
+            TestClub.delete_club()
+            TestCompetition.delete_competition()
+
+    def test_should_save_points(self):
+        TestClub.create_club()
+        TestCompetition.create_comp()
+
+        test_club = [c for c in update_clubs() if c["name"] == "TEST"][0]
+        test_comp = [comp for comp in update_competitions() if comp["name"] == "TEST"][
+            0
+        ]
+
+        try:
+            with self.app.test_request_context("/purchasePlaces", method="POST"):
+                form_data = request.form.to_dict()
+
+                form_data["competition"] = test_comp["name"]
+                form_data["club"] = test_club["name"]
+                form_data["places"] = "2"
+
+                request.form = form_data
+                response = purchasePlaces()
+
+            test_club["points"] = int(test_club["points"]) - int(form_data["places"])
+            self.assertIn(f"Points available: {test_club['points']}", response)
+
+        finally:
+            TestClub.delete_club()
+            TestCompetition.delete_competition()
