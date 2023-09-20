@@ -85,12 +85,11 @@ class TestPoints(TestCase):
                 form_data["competition"] = test_comp["name"]
                 form_data["club"] = test_club["name"]
                 form_data["places"] = "2"
-
+                points = int(test_club["points"]) - int(form_data["places"])
                 request.form = form_data
                 response = purchasePlaces()
 
-            test_club["points"] = int(test_club["points"]) - int(form_data["places"])
-            self.assertIn(f"Points available: {test_club['points']}", response)
+            self.assertIn(f"Points available: {points}", response)
 
         finally:
             TestClub.delete_club()
