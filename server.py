@@ -1,5 +1,6 @@
 import json
 from flask import Flask, render_template, request, redirect, flash, url_for
+import logging
 
 
 def loadClubs():
@@ -68,9 +69,17 @@ def showSummary():
 def book(competition, club):
     foundClub = [c for c in clubs if c["name"] == club][0]
     foundCompetition = [c for c in competitions if c["name"] == competition][0]
+    foundClub["points"] = int(foundClub["points"])
+    max_points = min(
+        [int(foundCompetition["numberOfPlaces"]), int(foundClub["points"]), 12]
+    )
+    print(max_points)
     if foundClub and foundCompetition:
         return render_template(
-            "booking.html", club=foundClub, competition=foundCompetition
+            "booking.html",
+            club=foundClub,
+            competition=foundCompetition,
+            max_points=max_points,
         )
     else:
         flash("Something went wrong-please try again")
@@ -86,10 +95,22 @@ def purchasePlaces():
     club = [c for c in clubs if c["name"] == request.form["club"]][0]
 
     placesRequired = int(request.form["places"])
-    competition["numberOfPlaces"] = str(
-        int(competition["numberOfPlaces"]) - placesRequired
-    )
-    club["points"] = str(int(club["points"]) - placesRequired)
+
+    if placesRequired <= 12:
+        if placesRequired <= int(club["points"]):
+            competition["numberOfPlaces"] = str(
+                int(competition["numberOfPlaces"]) - placesRequired
+            )
+            club["points"] = str(int(club["points"]) - placesRequired)
+        else:
+            logging.warning("You DO NOT have enough points.")
+            flash("You DO NOT have enough points.")
+            return render_template("booking.html", club=club, competition=competition)
+    else:
+        logging.warning("You DO NOT have permission to purchase more than 12 places.")
+        flash("You DO NOT have permission to purchase more than 12 places.")
+        return render_template("booking.html", club=club, competition=competition)
+
     flash("Great-booking complete!")
     write_json_clubs(clubs)
     write_json_competitions(competitions)
