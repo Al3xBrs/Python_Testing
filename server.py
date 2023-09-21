@@ -26,6 +26,26 @@ def update_competitions():
     return competitions
 
 
+def write_json_clubs(clubs):
+    with open("clubs.json", "r") as file:
+        data = json.load(file)
+
+    data.update({"clubs": clubs})
+
+    with open("clubs.json", "w") as file:
+        json.dump(data, file, indent=4)
+
+
+def write_json_competitions(competitions):
+    with open("competitions.json", "r") as file:
+        data = json.load(file)
+
+    data.update({"competitions": competitions})
+
+    with open("competitions.json", "w") as file:
+        json.dump(data, file, indent=4)
+
+
 app = Flask(__name__)
 app.secret_key = "something_special"
 
@@ -66,9 +86,13 @@ def purchasePlaces():
     club = [c for c in clubs if c["name"] == request.form["club"]][0]
 
     placesRequired = int(request.form["places"])
-    competition["numberOfPlaces"] = int(competition["numberOfPlaces"]) - placesRequired
-    club["points"] = int(club["points"]) - placesRequired
+    competition["numberOfPlaces"] = str(
+        int(competition["numberOfPlaces"]) - placesRequired
+    )
+    club["points"] = str(int(club["points"]) - placesRequired)
     flash("Great-booking complete!")
+    write_json_clubs(clubs)
+    write_json_competitions(competitions)
     return render_template("welcome.html", club=club, competitions=competitions)
 
 
