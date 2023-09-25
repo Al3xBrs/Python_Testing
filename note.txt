@@ -5,12 +5,12 @@ Phases de test :
     - Identifier les éléments à venir (compétitions)          -OK
 
     - Si points club =< places disponibles lors de l'achat,
-    alors message de confirmation
+    alors message de confirmation                              -OK
 
-    - Les points du club sont déduis du compte
+    - Les points du club sont déduis du compte                 -OK
 
     - Si points du club = 0 ou si achat + de 12 places ou
-    places disponibles = 0, alors message erreur
+    places disponibles = 0, alors message erreur                -OK
 
     - Peut consulter la liste des points des autres clubs,
     même déconnecté                                            -OK
