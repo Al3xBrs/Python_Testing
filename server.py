@@ -1,6 +1,7 @@
 import json
 from flask import Flask, render_template, request, redirect, flash, url_for
 import logging
+from datetime import datetime
 
 
 def loadClubs():
@@ -61,9 +62,19 @@ def index():
 
 @app.route("/showSummary", methods=["POST"])
 def showSummary():
+    dnow = datetime.now()
+    futur_competitions = [
+        competition
+        for competition in competitions
+        if datetime.strptime(competition["date"], "%Y-%m-%d %H:%M:%S") > dnow
+    ]
     try:
+        print("DATE", dnow)
         club = [club for club in clubs if club["email"] == request.form["email"]][0]
-        return render_template("welcome.html", club=club, competitions=competitions)
+
+        return render_template(
+            "welcome.html", club=club, competitions=futur_competitions
+        )
 
     except:
         flash("This email DOES NOT exist. Try again.")
