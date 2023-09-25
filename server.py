@@ -69,7 +69,6 @@ def showSummary():
         if datetime.strptime(competition["date"], "%Y-%m-%d %H:%M:%S") > dnow
     ]
     try:
-        print("DATE", dnow)
         club = [club for club in clubs if club["email"] == request.form["email"]][0]
 
         return render_template(

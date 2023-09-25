@@ -6,6 +6,7 @@ from ..server import (
 from .models import TestClub, TestCompetition
 
 from flask_testing import TestCase
+from datetime import datetime
 
 
 class TestRoutes(TestCase):
@@ -35,6 +36,7 @@ class TestRoutes(TestCase):
     def test_should_return_correct_competitions_showSummary(self):
         TestClub.create_club()
         TestCompetition.create_comp()
+        dnow = datetime.now()
 
         response = self.client.post(
             "/showSummary",
@@ -48,9 +50,10 @@ class TestRoutes(TestCase):
             competitions = update_competitions()
             text_response = response.get_data(as_text=True)
             for comp in competitions:
-                self.assertIn(f"{comp['name']}", text_response)
-                self.assertIn(f"{comp['date']}", text_response)
-                self.assertIn(f"{comp['numberOfPlaces']}", text_response)
+                if datetime.strptime(comp["date"], "%Y-%m-%d %H:%M:%S") > dnow:
+                    self.assertIn(f"{comp['name']}", text_response)
+                    self.assertIn(f"{comp['date']}", text_response)
+                    self.assertIn(f"{comp['numberOfPlaces']}", text_response)
 
         finally:
             TestClub.delete_club()
