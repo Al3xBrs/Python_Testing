@@ -1,5 +1,5 @@
 import json
-from ..server import update_clubs, update_competitions
+from ...server import update_clubs, update_competitions
 
 
 class TestClub:

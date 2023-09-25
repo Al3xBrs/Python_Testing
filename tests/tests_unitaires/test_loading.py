@@ -1,4 +1,4 @@
-from ..server import loadClubs, loadCompetitions
+from ...server import loadClubs, loadCompetitions
 from .models import TestClub, TestCompetition
 
 

@@ -1,4 +1,4 @@
-from ..server import (
+from ...server import (
     update_competitions,
     app,
 )

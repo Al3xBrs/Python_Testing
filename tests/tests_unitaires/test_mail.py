@@ -1,5 +1,5 @@
 from flask_testing import TestCase
-from ..server import app
+from ...server import app
 
 
 class TestMailCheck(TestCase):
