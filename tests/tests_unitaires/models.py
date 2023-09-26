@@ -22,11 +22,33 @@ class TestClub:
         update_clubs()
 
     @classmethod
+    def create_club_0(cls):
+        club_data = {
+            "name": "TEST0",
+            "email": "test0@test.fr",
+            "points": "0",
+        }
+
+        with open("clubs.json", "r") as c:
+            json_data = json.load(c)
+
+        json_data["clubs"].append(club_data)
+
+        with open("clubs.json", "w") as c:
+            json.dump(json_data, c, indent=4)
+
+        update_clubs()
+
+    @classmethod
     def delete_club(cls):
         with open("clubs.json", "r") as c:
             json_data = json.load(c)
 
-        new_clubs = [club for club in json_data["clubs"] if club["name"] != "TEST"]
+        new_clubs = [
+            club
+            for club in json_data["clubs"]
+            if club["name"] != "TEST" and club["name"] != "TEST0"
+        ]
         json_data["clubs"] = new_clubs
 
         with open("clubs.json", "w") as c:
