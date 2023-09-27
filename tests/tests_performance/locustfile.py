@@ -1,24 +1,23 @@
 from locust import HttpUser, task, between
-import time
-from ..tests_unitaires.models import TestClub, TestCompetition
 
 
 class HttpRequestUser(HttpUser):
-    wait_time = between(1, 5)
+    wait_time = between(1, 2)
 
     def on_start(self):
-        TestClub.create_club()
-        TestCompetition.create_comp()
         self.client.post(
             "/showSummary",
-            data={"email": "test@test.fr"},
+            data={"email": "kate@shelifts.co.uk"},
         )
 
     @task
     def display_points(self):
         self.client.get("/points_display")
 
+    @task
+    def book_requests(self):
+        self.client.get("book/Spring Festival/She Lifts")
+        self.client.get("book/Fall Classic/She Lifts")
+
     def on_stop(self):
         self.client.get("/logout")
-        TestClub.delete_club()
-        TestCompetition.delete_competition()
