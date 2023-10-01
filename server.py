@@ -129,7 +129,14 @@ def purchasePlaces():
     flash("Great-booking complete!")
     write_json_clubs(clubs)
     write_json_competitions(competitions)
-    return render_template("welcome.html", club=club, competitions=competitions)
+
+    dnow = datetime.now()
+    futur_competitions = [
+        competition
+        for competition in competitions
+        if datetime.strptime(competition["date"], "%Y-%m-%d %H:%M:%S") > dnow
+    ]
+    return render_template("welcome.html", club=club, competitions=futur_competitions)
 
 
 @app.route("/points_display")
